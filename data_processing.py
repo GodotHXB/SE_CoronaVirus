@@ -99,7 +99,41 @@ def get_province_data(file):
     to_excel('D:/CoronaVirus/data/province_excels/', by_province_n, date,
              'date', 'province', 'count', date + '各省份本土新增无症状感染者数据.xlsx')
 
+def get_special_area_data(file):
+    # 获取港澳台数据
+    total_infected = ""
+    total_infected_g = 0
+    total_infected_a = 0
+    total_infected_t = 0
+
+    special_area = ['香港特别行政区','澳门特别行政区','台湾地区']
+
+    with open(file, 'r', encoding='utf-8') as fp:
+        title = file.name
+        date = re.findall("(.*?)疫情通报", title)[0]  # 得到日期
+        print(date)
+        text = fp.read()
+
+    try:
+        total_infected = re.findall("累计收到港澳台地区通报确诊病例(.*)", text, re.DOTALL)[0]
+    except IndexError:
+        pass
+
+    try:
+        total_infected_g = re.findall('香港特别行政区(.*?)例', total_infected, re.DOTALL)[0]
+        total_infected_a = re.findall('澳门特别行政区(.*?)例', total_infected, re.DOTALL)[0]
+        total_infected_t = re.findall('(台湾地区|中国台湾)(.*?)例', total_infected, re.DOTALL)[0][1]
+    except IndexError:
+        pass
+
+    special_area_data = {}
+    special_area_data['香港特别行政区'] = total_infected_g
+    special_area_data['澳门特别行政区'] = total_infected_a
+    special_area_data['台湾地区'] = total_infected_t
+    to_excel('D:/CoronaVirus/data/special_area_excels/', special_area_data, date, 'date', 'area', 'count', date + '港澳台累计确诊数据.xlsx')
+
 if __name__ == '__main__':
     for file in lst:
-        #get_main_land_data(file)
-        get_province_data(file)
+        # get_main_land_data(file)
+        # get_province_data(file)
+        get_special_area_data(file)
