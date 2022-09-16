@@ -2,9 +2,10 @@ import os
 import re
 import pandas
 
-lst = os.scandir("D:/CoronaVirus/data/txts")
+lst = os.scandir("D:/CoronaVirus/data/txts") # 疫情通报数据本地位置
 
 def to_excel(path,data,date,cn1,cn2,cn3,name):
+    # 导出excel表格
     excel = pandas.DataFrame(data,index=list(range(1,len(data.keys())+1)),columns=[cn1,cn2,cn3])
     excel[cn1] = date
     excel[cn2] = data.keys()
@@ -12,6 +13,7 @@ def to_excel(path,data,date,cn1,cn2,cn3,name):
     excel.to_excel(path + name,index=False)
 
 def get_main_land_data(file):
+    # 获取大陆数据
     newly_infected = 0
     newly_infected_n = 0
 
