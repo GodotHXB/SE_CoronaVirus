@@ -114,11 +114,13 @@ def get_special_area_data(file):
         print(date)
         text = fp.read()
 
+    # 获取港澳台地区疫情通报
     try:
         total_infected = re.findall("累计收到港澳台地区通报确诊病例(.*)", text, re.DOTALL)[0]
     except IndexError:
         pass
 
+    # 获取港澳台地区疫情数据
     try:
         total_infected_g = re.findall('香港特别行政区(.*?)例', total_infected, re.DOTALL)[0]
         total_infected_a = re.findall('澳门特别行政区(.*?)例', total_infected, re.DOTALL)[0]
@@ -130,6 +132,8 @@ def get_special_area_data(file):
     special_area_data['香港特别行政区'] = total_infected_g
     special_area_data['澳门特别行政区'] = total_infected_a
     special_area_data['台湾地区'] = total_infected_t
+
+    # 写入excel表格
     to_excel('D:/CoronaVirus/data/special_area_excels/', special_area_data, date, 'date', 'area', 'count', date + '港澳台累计确诊数据.xlsx')
 
 if __name__ == '__main__':
