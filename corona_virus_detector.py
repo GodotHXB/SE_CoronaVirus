@@ -69,10 +69,10 @@ def get_text(half_urls, page):
                 title = title_script
                 print(title)
                 if(title == "武汉市卫生健康委员会关于新型冠状病毒感染的肺炎情况通报"):
-                    save_file(text, str(count) + title, 'data/txts/')
+                    save_file(text, str(count) + title, '../data/txts/')
                     count = count - 1
                 else:
-                    save_file(text, title, 'data/txts/')
+                    save_file(text, title, '../data/txts/')
         else:
             # 通用爬取疫情通报
             try:
@@ -80,7 +80,7 @@ def get_text(half_urls, page):
             except IndexError:
                 continue
             year_change(date)
-            save_file(text, str(Year) + "年" + str(date) + "疫情通报", 'data/txts/')
+            save_file(text, str(Year) + "年" + str(date) + "疫情通报", '../data/txts/')
 
 if __name__ == '__main__':
     # 主函数
