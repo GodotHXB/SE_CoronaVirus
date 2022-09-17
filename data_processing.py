@@ -3,6 +3,7 @@ import re
 import pandas
 
 lst = os.scandir("D:/CoronaVirus/data/txts") # 疫情通报数据本地位置
+special_days = []
 
 def to_excel(path,data,date,cn1,cn2,cn3,name):
     # 导出excel表格
@@ -11,6 +12,20 @@ def to_excel(path,data,date,cn1,cn2,cn3,name):
     excel[cn2] = data.keys()
     excel[cn3] = data.values()
     excel.to_excel(path + name,index=False)
+
+def load_special_days():
+    special_day_list = []
+    for month in range(1,4):
+        if month==1:
+            for day in range(10,32):
+                special_day_list.append("2020年" + str(month) + "月" + str(day) + "日")
+        if month==2:
+            for day in range(1,30):
+                special_day_list.append("2020年" + str(month) + "月" + str(day) + "日")
+        if month==3:
+            for day in range(1,24):
+                special_day_list.append("2020年" + str(month) + "月" + str(day) + "日")
+    return special_day_list
 
 def get_main_land_data(file):
     # 获取大陆数据
@@ -27,14 +42,17 @@ def get_main_land_data(file):
 
     # 本土新增确诊
     try:
-        context_newly_infected = re.findall("本土病例(.*?)例|其中(.*?)例为本土病例", text, re.DOTALL) # 匹配两种可能情况
-        if(context_newly_infected[0][0] == ''): # 第一种没匹配上
-            newly_infected = context_newly_infected[0][1]
+        if date in special_days:
+            newly_infected = re.findall("确诊病例(.*?)例", text, re.DOTALL)[0]
         else:
-            newly_infected = context_newly_infected[0][0]
-        # 解决2020年4月份特殊格式
-        if context_newly_infected[0][1].isdigit() == False:
-            newly_infected = re.findall("例为境外输入病例，(.*?)例", text, re.DOTALL)[0]
+            context_newly_infected = re.findall("本土病例(.*?)例|其中(.*?)例为本土病例", text, re.DOTALL) # 匹配两种可能情况
+            if(context_newly_infected[0][0] == ''): # 第一种没匹配上
+                newly_infected = context_newly_infected[0][1]
+            else:
+                newly_infected = context_newly_infected[0][0]
+            # 解决2020年4月份特殊格式
+            if context_newly_infected[0][1].isdigit() == False:
+                newly_infected = re.findall("例为境外输入病例，(.*?)例", text, re.DOTALL)[0]
     except IndexError:
         pass
 
@@ -181,6 +199,8 @@ def get_special_area_data(file):
     to_excel('D:/CoronaVirus/data/special_area_excels/', special_area_data, date, 'date', 'area', 'count', date + '港澳台累计确诊数据.xlsx')
 
 if __name__ == '__main__':
+    special_days = load_special_days()
+    # print(special_days)
     for file in lst:
         get_main_land_data(file)
         # get_province_data(file)
