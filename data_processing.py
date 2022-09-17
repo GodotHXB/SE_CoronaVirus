@@ -16,18 +16,34 @@ def get_main_land_data(file):
     # 获取大陆数据
     newly_infected = 0
     newly_infected_n = 0
+    newly_infected_total = 0
 
     with open(file, 'r', encoding='utf-8') as fp:
         title = file.name
         date = re.findall("(.*?)疫情通报", title)[0]  # 得到日期
         print(date)
         text = fp.read()
+
+    # 本土新增确诊
     try:
-        newly_infected = re.findall("新增确诊病例(.*?)例", text, re.DOTALL)[0]
+        context_newly_infected = re.findall("本土病例(.*?)例|其中(.*?)例为本土病例", text, re.DOTALL)
+        if(context_newly_infected[0][0] == ''):
+            newly_infected = context_newly_infected[0][1]
+        else:
+            newly_infected = context_newly_infected[0][0]
     except IndexError:
         pass
+
+    # 本土新增无症状感染者
     try:
-        newly_infected_n = re.findall('新增无症状感染者(.*?)例', text, re.DOTALL)[0]
+        context_newly_infected_n = re.findall('新增无症状感染者.*?例(.*)', text, re.DOTALL)[0]
+        context_newly_infected_n_total = re.findall('新增无症状感染者(.*?)例.*', text, re.DOTALL)[0]
+        newly_infected_n = re.findall("本土(.*?)例", context_newly_infected_n, re.DOTALL)[0]
+
+        # 处理无境外输入情况
+        in_judge = re.findall('无境外输入', context_newly_infected_n, re.DOTALL)[0]
+        if(in_judge == "无境外输入" ):
+            newly_infected_n = context_newly_infected_n_total
     except IndexError:
         pass
 
@@ -73,10 +89,14 @@ def get_province_data(file):
     try:
         province_name = re.findall("([\u4E00-\u9FA5]+?)[0-9]*?例", context_newly_infected, re.DOTALL)
         province_count = re.findall('[\u4E00-\u9FA5]+?([0-9]*?)例', context_newly_infected, re.DOTALL)
-        i = 0
+        print(province_name)
+        print(province_count)
+        i=0
         for province in province_name:
-            if(province in provinces):
+            if province in provinces:
                 by_province[province] = province_count[i]
+                i = i + 1
+            else:
                 i = i + 1
     except IndexError:
         pass
@@ -85,17 +105,19 @@ def get_province_data(file):
     try:
         province_name = re.findall("([\u4E00-\u9FA5]+?)[0-9]*?例", context_newly_infected_n, re.DOTALL)
         province_count = re.findall('[\u4E00-\u9FA5]+?([0-9]*?)例', context_newly_infected_n, re.DOTALL)
-        i = 0
+        i=0
         for province in province_name:
-            if(province in provinces):
+            if province in provinces:
                 by_province_n[province] = province_count[i]
+                i = i + 1
+            else:
                 i = i + 1
     except IndexError:
         pass
 
     # 写入excel表格
     to_excel('D:/CoronaVirus/data/province_excels/', by_province, date,
-             'date', 'province', 'count', date + '各省份本土新增感染者数据.xlsx')
+             'date', 'province', 'count', date + '各省份本土新增确诊数据.xlsx')
     to_excel('D:/CoronaVirus/data/province_excels/', by_province_n, date,
              'date', 'province', 'count', date + '各省份本土新增无症状感染者数据.xlsx')
 
@@ -116,15 +138,15 @@ def get_special_area_data(file):
 
     # 获取港澳台地区疫情通报
     try:
-        total_infected = re.findall("累计收到港澳台地区通报确诊病例(.*)", text, re.DOTALL)[0]
+        total_infected = re.findall("(国（境）外通报确诊病例|累计收到港澳台地区通报确诊病例)(.*)", text, re.DOTALL)[0][1]
     except IndexError:
         pass
 
     # 获取港澳台地区疫情数据
     try:
-        total_infected_g = re.findall('香港特别行政区(.*?)例', total_infected, re.DOTALL)[0]
-        total_infected_a = re.findall('澳门特别行政区(.*?)例', total_infected, re.DOTALL)[0]
-        total_infected_t = re.findall('(台湾地区|中国台湾)(.*?)例', total_infected, re.DOTALL)[0][1]
+        total_infected_g = re.findall('(中国香港|香港特别行政区)(.*?)例', total_infected, re.DOTALL)[0][1]
+        total_infected_a = re.findall('(中国澳门|澳门特别行政区)(.*?)例', total_infected, re.DOTALL)[0][1]
+        total_infected_t = re.findall('(中国台湾|台湾地区)(.*?)例', total_infected, re.DOTALL)[0][1]
     except IndexError:
         pass
 
@@ -138,6 +160,6 @@ def get_special_area_data(file):
 
 if __name__ == '__main__':
     for file in lst:
-        # get_main_land_data(file)
+        get_main_land_data(file)
         # get_province_data(file)
-        get_special_area_data(file)
+        # get_special_area_data(file)
