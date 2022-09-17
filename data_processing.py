@@ -116,15 +116,15 @@ def get_special_area_data(file):
 
     # 获取港澳台地区疫情通报
     try:
-        total_infected = re.findall("(国（境）外通报确诊病例|累计收到港澳台地区通报确诊病例)(.*)", text, re.DOTALL)[0][1]
+        total_infected = re.findall("累计收到港澳台地区通报确诊病例(.*)", text, re.DOTALL)[0]
     except IndexError:
         pass
 
     # 获取港澳台地区疫情数据
     try:
-        total_infected_g = re.findall('(中国香港|香港特别行政区)(.*?)例', total_infected, re.DOTALL)[0][1]
-        total_infected_a = re.findall('(中国澳门|澳门特别行政区)(.*?)例', total_infected, re.DOTALL)[0][1]
-        total_infected_t = re.findall('(中国台湾|台湾地区)(.*?)例', total_infected, re.DOTALL)[0][1]
+        total_infected_g = re.findall('香港特别行政区(.*?)例', total_infected, re.DOTALL)[0]
+        total_infected_a = re.findall('澳门特别行政区(.*?)例', total_infected, re.DOTALL)[0]
+        total_infected_t = re.findall('(台湾地区|中国台湾)(.*?)例', total_infected, re.DOTALL)[0][1]
     except IndexError:
         pass
 
