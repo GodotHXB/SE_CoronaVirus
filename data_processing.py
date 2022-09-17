@@ -32,6 +32,9 @@ def get_main_land_data(file):
             newly_infected = context_newly_infected[0][1]
         else:
             newly_infected = context_newly_infected[0][0]
+        # 解决2020年4月份特殊格式
+        if context_newly_infected[0][1].isdigit() == False:
+            newly_infected = re.findall("例为境外输入病例，(.*?)例", text, re.DOTALL)[0]
     except IndexError:
         pass
 
