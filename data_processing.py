@@ -27,8 +27,8 @@ def get_main_land_data(file):
 
     # 本土新增确诊
     try:
-        context_newly_infected = re.findall("本土病例(.*?)例|其中(.*?)例为本土病例", text, re.DOTALL)
-        if(context_newly_infected[0][0] == ''):
+        context_newly_infected = re.findall("本土病例(.*?)例|其中(.*?)例为本土病例", text, re.DOTALL) # 匹配两种可能情况
+        if(context_newly_infected[0][0] == ''): # 第一种没匹配上
             newly_infected = context_newly_infected[0][1]
         else:
             newly_infected = context_newly_infected[0][0]
@@ -45,13 +45,13 @@ def get_main_land_data(file):
         try:
             newly_infected_n = int(re.findall("本土(.*?)例", context_newly_infected_n, re.DOTALL)[0])
         except:
+            # print("in here")
             out_side_in_judge = re.findall('（.*?）', context_newly_infected_n, re.DOTALL)[0]
-            out_side_in = re.findall('（境外输入(.*?)例）', context_newly_infected_n, re.DOTALL)[0]
-            if(out_side_in.isdigit()):
-                out_side_in = int(out_side_in)
+            out_side_in = re.findall('（境外输入(.*?)例）|境外输入无症状感染者(.*?)例', context_newly_infected_n, re.DOTALL)
+            if (out_side_in[0][0] == ''):
+                out_side_in = int(out_side_in[0][1])
             else:
-                out_side_in = 0
-
+                out_side_in = int(out_side_in[0][0])
         # 处理只有境外输入数据情况
         if newly_infected_n != 0:
             pass
@@ -59,20 +59,21 @@ def get_main_land_data(file):
         elif newly_infected_n == 0 and out_side_in != 0:
             newly_infected_n = newly_infected_n_total - out_side_in
         # 处理均为境外输入情况
-        elif out_side_in_judge == '均为境外输入' :
+        elif out_side_in_judge == '均为境外输入':
             newly_infected_n = 0
         # 处理无境外输入
-        elif out_side_in_judge == '无境外输入' :
+        elif out_side_in_judge == '无境外输入':
             newly_infected_n = newly_infected_n_total
 
     except IndexError:
+        # print("error")
         pass
 
     whole_nation = {}
     whole_nation['新增确诊病例'] = newly_infected
     whole_nation['新增无症状感染者'] = newly_infected_n
-    print(newly_infected)
-    print(newly_infected_n)
+    # print(newly_infected)
+    # print(newly_infected_n)
     to_excel('D:/CoronaVirus/data/main_land_excels/', whole_nation, date, 'date', 'type', 'count', date + '中国大陆新增数据.xlsx')
 
 def get_province_data(file):
