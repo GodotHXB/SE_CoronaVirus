@@ -17,6 +17,7 @@ def get_main_land_data(file):
     newly_infected = 0
     newly_infected_n = 0
     newly_infected_total = 0
+    out_side_in = 0
 
     with open(file, 'r', encoding='utf-8') as fp:
         title = file.name
@@ -36,14 +37,31 @@ def get_main_land_data(file):
 
     # 本土新增无症状感染者
     try:
-        context_newly_infected_n = re.findall('新增无症状感染者.*?例(.*)', text, re.DOTALL)[0]
-        context_newly_infected_n_total = re.findall('新增无症状感染者(.*?)例.*', text, re.DOTALL)[0]
-        newly_infected_n = re.findall("本土(.*?)例", context_newly_infected_n, re.DOTALL)[0]
+        context_newly_infected_n = re.findall('新增无症状感染者.*?例(.*?）)', text, re.DOTALL)[0]
+        newly_infected_n_total = int(re.findall('新增无症状感染者(.*?)例.*', text, re.DOTALL)[0])
+        try:
+            newly_infected_n = int(re.findall("本土(.*?)例", context_newly_infected_n, re.DOTALL)[0])
+        except:
+            out_side_in_judge = re.findall('（.*?）', context_newly_infected_n, re.DOTALL)[0]
+            out_side_in = re.findall('（境外输入(.*?)例）', context_newly_infected_n, re.DOTALL)[0]
+            if(out_side_in.isdigit()):
+                out_side_in = int(out_side_in)
+            else:
+                out_side_in = 0
 
-        # 处理无境外输入情况
-        in_judge = re.findall('无境外输入', context_newly_infected_n, re.DOTALL)[0]
-        if(in_judge == "无境外输入" ):
-            newly_infected_n = context_newly_infected_n_total
+        # 处理只有境外输入数据情况
+        if newly_infected_n != 0:
+            pass
+        # 处理境外输入X例情况
+        elif newly_infected_n == 0 and out_side_in != 0:
+            newly_infected_n = newly_infected_n_total - out_side_in
+        # 处理均为境外输入情况
+        elif out_side_in_judge == '均为境外输入' :
+            newly_infected_n = 0
+        # 处理无境外输入
+        elif out_side_in_judge == '无境外输入' :
+            newly_infected_n = newly_infected_n_total
+
     except IndexError:
         pass
 
