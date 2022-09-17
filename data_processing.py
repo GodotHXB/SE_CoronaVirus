@@ -14,6 +14,7 @@ def to_excel(path,data,date,cn1,cn2,cn3,name):
     excel.to_excel(path + name,index=False)
 
 def load_special_days():
+    # 设置一个特殊日期list，处理疫情初期数据使用
     special_day_list = []
     for month in range(1,4):
         if month==1:
@@ -34,6 +35,7 @@ def get_main_land_data(file):
     newly_infected_total = 0
     out_side_in = 0
 
+    # 读取文件，获取日期
     with open(file, 'r', encoding='utf-8') as fp:
         title = file.name
         date = re.findall("(.*?)疫情通报", title)[0]  # 得到日期
@@ -42,6 +44,7 @@ def get_main_land_data(file):
 
     # 本土新增确诊
     try:
+        # 处理疫情初期数据
         if date in special_days:
             newly_infected = re.findall("确诊病例(.*?)例", text, re.DOTALL)[0]
         else:
@@ -58,14 +61,14 @@ def get_main_land_data(file):
 
     # 本土新增无症状感染者
     try:
-        context_newly_infected_n = re.findall('新增无症状感染者.*?例(.*?）)', text, re.DOTALL)[0]
-        newly_infected_n_total = int(re.findall('新增无症状感染者(.*?)例.*', text, re.DOTALL)[0])
+        context_newly_infected_n = re.findall('新增无症状感染者.*?例(.*?）)', text, re.DOTALL)[0] # 本土新增无症状文本
+        newly_infected_n_total = int(re.findall('新增无症状感染者(.*?)例.*', text, re.DOTALL)[0]) # 本土新增无症状总数
         try:
-            newly_infected_n = int(re.findall("本土(.*?)例", context_newly_infected_n, re.DOTALL)[0])
+            newly_infected_n = int(re.findall("本土(.*?)例", context_newly_infected_n, re.DOTALL)[0]) # 直接匹配到本土病例
         except:
             # print("in here")
             out_side_in_judge = re.findall('（.*?）', context_newly_infected_n, re.DOTALL)[0]
-            out_side_in = re.findall('（境外输入(.*?)例）|境外输入无症状感染者(.*?)例', context_newly_infected_n, re.DOTALL)
+            out_side_in = re.findall('（境外输入(.*?)例）|境外输入无症状感染者(.*?)例', context_newly_infected_n, re.DOTALL) # 匹配两种可能情况
             if (out_side_in[0][0] == ''):
                 out_side_in = int(out_side_in[0][1])
             else:
@@ -111,7 +114,7 @@ def get_province_data(file):
         by_province[province] = 0
         by_province_n[province] = 0
 
-    # 获取日期
+    # 读取文件，获取日期
     with open(file, 'r', encoding='utf-8') as fp:
         title = file.name
         date = re.findall("(.*?)疫情通报", title)[0]  # 得到日期
@@ -131,6 +134,7 @@ def get_province_data(file):
         province_count = re.findall('[\u4E00-\u9FA5]+?([0-9]*?)例', context_newly_infected, re.DOTALL)
         print(province_name)
         print(province_count)
+        # 按照省份list计入数据
         i=0
         for province in province_name:
             if province in provinces:
@@ -146,6 +150,7 @@ def get_province_data(file):
         province_name = re.findall("([\u4E00-\u9FA5]+?)[0-9]*?例", context_newly_infected_n, re.DOTALL)
         province_count = re.findall('[\u4E00-\u9FA5]+?([0-9]*?)例', context_newly_infected_n, re.DOTALL)
         i=0
+        # 按照省份list计入数据
         for province in province_name:
             if province in provinces:
                 by_province_n[province] = province_count[i]
@@ -170,6 +175,7 @@ def get_special_area_data(file):
 
     special_area = ['香港特别行政区','澳门特别行政区','台湾地区']
 
+    # 读取文件，获取信息
     with open(file, 'r', encoding='utf-8') as fp:
         title = file.name
         date = re.findall("(.*?)疫情通报", title)[0]  # 得到日期
