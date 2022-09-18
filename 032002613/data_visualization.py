@@ -72,9 +72,12 @@ def make_province_newly_infected(date):
     if infected.empty == True:
         print("输入的日期错误！")
         return
-    print(infected)
+    # print(infected)
 
     count = infected['count']
+    if max(count) == 0:
+        print("本日无新增。")
+        return
     # print(count)
 
     plt.bar(provinces, count)
@@ -101,6 +104,9 @@ def make_province_newly_infected_n(date):
     # print(infected_n)
 
     count = infected_n['count']
+    if max(count) == 0:
+        print("本日无新增。")
+        return
     # print(count)
 
     plt.bar(provinces, count)
@@ -111,6 +117,7 @@ def make_province_newly_infected_n(date):
         plt.text(a, b, format(b, ','), ha='center', fontsize=16)
     plt.title("各省份" + date + "本土新增无症状感染者")
     plt.show()
+
 
 def make_special_area_infected(select_area):
     # 生成港澳台新增确诊数据图
@@ -179,10 +186,10 @@ if __name__ == '__main__':
     if mode == 2:
         make_mainland_newly_infected_n()
     if mode == 3:
-        date = input("输入某个日期（例：2021年7月9日）：")
+        date = input("输入某个日期（例：2021年12月3日）：")
         make_province_newly_infected(date)
     if mode == 4:
-        date = input("输入某个日期（例：2021年7月9日）：")
+        date = input("输入某个日期（例：2021年12月3日）：")
         make_province_newly_infected_n(date)
     if mode == 5:
         select_area = input("请输入想要生成的地区（香港，澳门，台湾）：")
