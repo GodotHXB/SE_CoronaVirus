@@ -67,7 +67,7 @@ def make_province_newly_infected(date):
     data = pd.read_excel('各省份新增确诊数据总表.xlsx')
     # print(data)
 
-    # 各省份某日本土新增确诊病例
+    # 各省份某日本土新增确诊病例，同时判断输入的日期是否合法
     infected = data[data['date'] == date]
     if infected.empty == True:
         print("输入的日期错误！")
@@ -93,7 +93,7 @@ def make_province_newly_infected_n(date):
     data = pd.read_excel('各省份新增无症状感染者数据总表.xlsx')
     # print(data)
 
-    # 各省份某日本土新增确诊病例
+    # 各省份某日本土新增无症状感染者病例，同时判断输入的日期是否合法
     infected_n = data[data['date'] == date]
     if infected_n.empty == True:
         print("输入的日期错误！")
