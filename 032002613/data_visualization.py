@@ -112,6 +112,57 @@ def make_province_newly_infected_n(date):
     plt.title("各省份" + date + "本土新增无症状感染者")
     plt.show()
 
+def make_special_area_infected(select_area):
+    # 生成港澳台新增确诊数据图
+    plt.figure(figsize=(24, 10), dpi=300)
+    data = pd.read_excel('港澳台数据总表.xlsx')
+    # print(data)
+
+    # 港澳台累计确诊病例
+    infected_g = data[data['area'] == '香港特别行政区']
+    infected_a = data[data['area'] == '澳门特别行政区']
+    infected_t = data[data['area'] == '台湾地区']
+    # print(infected_g)
+    infected_count_g = infected_g['count']
+    infected_count_a = infected_a['count']
+    infected_count_t = infected_t['count']
+    # print(infected_count)
+
+    date = infected_g['date']
+    # print(date)
+
+    if select_area == '香港':
+        plt.plot(date, infected_count_g)
+        plt.xticks(range(0, 978, 80))
+        plt.yticks(range(0, 450000, 10000))
+        plt.ylim(0, 450000)
+        plt.xlabel("日期", fontproperties=my_font, fontsize=18)
+        plt.ylabel("累计确诊病例数量", fontproperties=my_font, fontsize=18)
+        plt.title("香港特别行政区累计确诊病例")
+        plt.show()
+
+    if select_area == '澳门':
+        plt.plot(date, infected_count_a)
+        plt.plot(date, infected_count_a)
+        plt.xticks(range(0, 978, 80))
+        plt.yticks(range(0, 800, 40))
+        plt.ylim(0, 800)
+        plt.xlabel("日期", fontproperties=my_font, fontsize=18)
+        plt.ylabel("累计确诊病例数量", fontproperties=my_font, fontsize=18)
+        plt.title("澳门特别行政区累计确诊病例")
+        plt.show()
+
+    if select_area == '台湾':
+        plt.plot(date, infected_count_t)
+        plt.plot(date, infected_count_t)
+        plt.xticks(range(0, 978, 80))
+        plt.yticks(range(0, 6000000, 300000))
+        plt.ylim(0, 6000000)
+        plt.xlabel("日期", fontproperties=my_font, fontsize=18)
+        plt.ylabel("累计确诊病例数量", fontproperties=my_font, fontsize=18)
+        plt.title("台湾地区累计确诊病例")
+        plt.show()
+
 
 if __name__ == '__main__':
     mode = int(input("""请输入想要生成的数据类型：
@@ -119,7 +170,7 @@ if __name__ == '__main__':
 2.中国大陆本土新增无症状感染者
 3.各省份某日本土新增确诊病例
 4.各省份某日本土新增无症状感染者
-5.港澳台累计确诊人数
+5.港澳台累计确诊病例
 （输入1-5的某个数字，输入0退出）：
 """))
 
@@ -133,5 +184,8 @@ if __name__ == '__main__':
     if mode == 4:
         date = input("输入某个日期（例：2021年7月9日）：")
         make_province_newly_infected_n(date)
-    if (mode == 0):
+    if mode == 5:
+        select_area = input("请输入想要生成的地区（香港，澳门，台湾）：")
+        make_special_area_infected(select_area)
+    if mode == 0:
         pass
